@@ -1,0 +1,71 @@
+/* =============================================
+   📬 FEEDBACK LIST STYLES
+   ============================================= */
+
+.feedback-list {
+  max-width: 600px;
+  width: 100%;
+}
+
+.feedback-list-title {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+}
+
+.feedback-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.feedback-item {
+  padding: var(--space-md) var(--space-lg);
+}
+
+.feedback-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-sm);
+}
+
+.feedback-author {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--accent-gold);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.feedback-emoji {
+  font-size: 1.1rem;
+}
+
+.feedback-date {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.feedback-content {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+/* Empty & Loading */
+.feedback-list-empty {
+  text-align: center;
+  padding: var(--space-xl);
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.feedback-list-loading {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-xl);
+}

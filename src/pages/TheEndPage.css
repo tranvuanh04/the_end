@@ -1,0 +1,137 @@
+/* =============================================
+   🎬 THE END PAGE STYLES — Enhanced Cinematic
+   ============================================= */
+
+.theend-page {
+  background: var(--bg-secondary);
+  position: relative;
+}
+
+/* Stars */
+.stars-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.star {
+  position: absolute;
+  background: var(--accent-rose);
+  border-radius: var(--radius-full);
+  animation: sparkle 3s ease-in-out infinite;
+  box-shadow: 0 0 6px currentColor;
+}
+
+/* Cinema bars */
+.cinema-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(63, 43, 50, 0.95),
+    rgba(63, 43, 50, 0.85)
+  );
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+
+.cinema-bar-top {
+  top: 0;
+}
+
+.cinema-bar-bottom {
+  bottom: 0;
+}
+
+/* Text container */
+.theend-text-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  z-index: 10;
+}
+
+/* The End title */
+.theend-title {
+  font-family: var(--font-heading);
+  font-size: clamp(3rem, 10vw, 6rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  text-shadow:
+    0 0 40px rgba(236, 72, 153, 0.3),
+    0 0 80px rgba(236, 72, 153, 0.1),
+    0 0 120px rgba(236, 72, 153, 0.05);
+  display: flex;
+}
+
+.theend-char {
+  display: inline-block;
+  background: var(--gradient-cinematic);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 4s ease infinite;
+}
+
+/* Divider */
+.theend-divider {
+  height: 1px;
+  background: var(--gradient-gold);
+  border-radius: 1px;
+  box-shadow:
+    0 0 10px rgba(236, 72, 153, 0.4),
+    0 0 30px rgba(236, 72, 153, 0.15);
+}
+
+/* Subtitle */
+.theend-subtitle {
+  font-family: var(--font-quote);
+  font-style: italic;
+  font-size: clamp(1.2rem, 3vw, 1.8rem);
+  color: var(--text-secondary);
+  letter-spacing: 0.15em;
+  text-shadow: 0 0 20px rgba(236, 72, 153, 0.2);
+}
+
+/* Burst particles */
+.burst-particles {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.burst-particle {
+  position: absolute;
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 8px currentColor;
+}
+
+/* Timer bar */
+.timer-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient-cinematic);
+  transform-origin: left;
+  z-index: 200;
+  opacity: 0.7;
+  box-shadow: 0 0 15px rgba(236, 72, 153, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .theend-title {
+    font-size: 2.5rem;
+  }
+
+  .theend-subtitle {
+    font-size: 1.1rem;
+  }
+}

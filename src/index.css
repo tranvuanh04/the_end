@@ -1,0 +1,345 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;1,400;1,500&display=swap');
+
+/* =============================================
+   🎨 DESIGN SYSTEM — "The End" Cinematic Theme
+   ============================================= */
+
+:root {
+  color-scheme: light;
+
+  /* Colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #fff0f3;
+  --bg-card: #ffffff;
+  --bg-card-hover: #fff0f3;
+  --bg-glass: rgba(255, 255, 255, 0.85);
+  --bg-overlay: rgba(255, 240, 243, 0.95);
+
+  --text-primary: #3f2b32;
+  --text-secondary: #7d5a65;
+  --text-muted: #ab8e96;
+
+  --accent-gold: #ec4899;
+  --accent-gold-light: #f472b6;
+  --accent-rose: #f43f5e;
+  --accent-blue: #db2777;
+  --accent-green: #10b981;
+  --accent-purple: #a855f7;
+  --accent-peach: #fb7185;
+
+  --gradient-gold: linear-gradient(135deg, #db2777, #f43f5e);
+  --gradient-rose: linear-gradient(135deg, #f472b6, #fb7185);
+  --gradient-cinematic: linear-gradient(135deg, #db2777 0%, #ec4899 50%, #f43f5e 100%);
+  --gradient-card: linear-gradient(145deg, #ffffff 0%, #fff5f7 100%);
+  --gradient-envelope: linear-gradient(135deg, #fff0f3 0%, #ffe4e6 50%, #ffffff 100%);
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(236, 72, 153, 0.08);
+  --shadow-md: 0 4px 20px rgba(236, 72, 153, 0.1);
+  --shadow-lg: 0 8px 40px rgba(236, 72, 153, 0.15);
+  --shadow-glow-gold: 0 0 30px rgba(236, 72, 153, 0.2);
+  --shadow-glow-rose: 0 0 30px rgba(244, 63, 94, 0.2);
+
+  /* Typography */
+  --font-heading: 'Playfair Display', 'Georgia', serif;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+  --font-quote: 'Lora', 'Georgia', serif;
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 50%;
+
+  /* Transitions */
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-cinematic: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --transition-fast: 200ms var(--ease-smooth);
+  --transition-normal: 350ms var(--ease-smooth);
+  --transition-slow: 600ms var(--ease-cinematic);
+}
+
+/* =============================================
+   🌐 GLOBAL RESET & BASE
+   ============================================= */
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+a {
+  color: var(--accent-gold);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--accent-gold-light);
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: var(--font-body);
+  color: var(--text-primary);
+}
+
+/* =============================================
+   📝 TYPOGRAPHY
+   ============================================= */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+/* =============================================
+   ✨ UTILITY CLASSES
+   ============================================= */
+
+.page-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-panel {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-lg);
+}
+
+/* =============================================
+   🎬 GLOBAL ANIMATIONS
+   ============================================= */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+/* 🌸 Petal Rain */
+@keyframes petalFall {
+  0% {
+    transform: translateY(-10vh) translateX(0) rotate(0deg) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(110vh) translateX(var(--petal-drift, 80px)) rotate(var(--petal-rotation, 360deg)) scale(0.6);
+    opacity: 0;
+  }
+}
+
+@keyframes petalSway {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(15px); }
+  75% { transform: translateX(-15px); }
+}
+
+/* ✨ Animated Mesh Gradient */
+@keyframes meshMove {
+  0% {
+    background-position: 0% 0%, 100% 100%, 50% 50%;
+  }
+  25% {
+    background-position: 100% 0%, 0% 100%, 25% 75%;
+  }
+  50% {
+    background-position: 100% 100%, 0% 0%, 75% 25%;
+  }
+  75% {
+    background-position: 0% 100%, 100% 0%, 50% 50%;
+  }
+  100% {
+    background-position: 0% 0%, 100% 100%, 50% 50%;
+  }
+}
+
+/* 🔄 Border Rotation */
+@keyframes borderRotate {
+  0% { --border-angle: 0deg; }
+  100% { --border-angle: 360deg; }
+}
+
+@keyframes rotateBorder {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ✍️ Typewriter cursor */
+@keyframes typewriterCursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* 🌟 Glow pulse */
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(236, 72, 153, 0.15),
+                0 0 40px rgba(236, 72, 153, 0.05);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(236, 72, 153, 0.25),
+                0 0 60px rgba(236, 72, 153, 0.1);
+  }
+}
+
+/* =============================================
+   🌸 PETAL RAIN COMPONENT
+   ============================================= */
+
+.petal-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.petal {
+  position: absolute;
+  top: -20px;
+  width: var(--petal-size, 12px);
+  height: var(--petal-size, 12px);
+  background: var(--petal-color, rgba(236, 72, 153, 0.4));
+  border-radius: 50% 0 50% 50%;
+  animation: petalFall var(--petal-duration, 8s) var(--petal-delay, 0s) linear infinite;
+  filter: blur(0.5px);
+  will-change: transform;
+}
+
+.petal::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.5), transparent);
+  border-radius: inherit;
+}
+
+/* =============================================
+   ✨ ANIMATED MESH BACKGROUND
+   ============================================= */
+
+.animated-mesh-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 600px 600px at 20% 20%, rgba(236, 72, 153, 0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 500px 500px at 80% 80%, rgba(244, 63, 94, 0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 400px 400px at 50% 50%, rgba(168, 85, 247, 0.04) 0%, transparent 70%);
+  background-size: 200% 200%, 200% 200%, 200% 200%;
+  animation: meshMove 20s ease-in-out infinite;
+}
+
+/* =============================================
+   📱 SCROLLBAR
+   ============================================= */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(236, 72, 153, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(236, 72, 153, 0.5);
+}

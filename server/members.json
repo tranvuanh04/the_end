@@ -1,0 +1,102 @@
+[
+  {
+    "name": "Nguyễn Văn A",
+    "nickname": "Anh A",
+    "role": "Team Lead",
+    "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=A",
+    "message": "Anh là người đã dẫn dắt em từ những ngày đầu tiên. Cảm ơn anh vì sự kiên nhẫn, vì những lần review code tận tâm, và vì luôn tin tưởng giao cho em những task quan trọng. Anh đã dạy em rằng một leader tốt không chỉ giỏi về kỹ thuật mà còn biết lắng nghe.",
+    "quote": "\"Code chạy được chưa đủ, phải đẹp nữa!\" — Anh A",
+    "color": "#d4a574",
+    "order": 1
+  },
+  {
+    "name": "Trần Thị B",
+    "nickname": "Chị B",
+    "role": "Senior Developer",
+    "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=B",
+    "message": "Chị là người mà em luôn ngưỡng mộ về khả năng giải quyết vấn đề. Mỗi lần em stuck, chị luôn có cách giải thích đơn giản nhất. Cảm ơn chị đã luôn sẵn sàng giúp đỡ và chia sẻ kinh nghiệm.",
+    "quote": "\"Đừng sợ sai, sợ không dám thử mới đáng sợ.\" — Chị B",
+    "color": "#e8a0bf",
+    "order": 2
+  },
+  {
+    "name": "Lê Văn C",
+    "nickname": "C bro",
+    "role": "Frontend Developer",
+    "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=C",
+    "message": "Bro là partner CSS không thể thiếu! Bao nhiêu lần debug layout cùng nhau, bao nhiêu lần cãi nhau về pixel-perfect. Cảm ơn bro vì những buổi trưa ăn cùng và những câu đùa xả stress.",
+    "quote": "\"Margin hay padding? That is the question.\" — C bro",
+    "color": "#7eb8da",
+    "order": 3
+  },
+  {
+    "name": "Phạm Thị D",
+    "nickname": "D cute",
+    "role": "UI/UX Designer",
+    "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=D",
+    "message": "Cảm ơn D vì những bản design đẹp lung linh mà đôi khi dev phải khóc thét 😂. Nhưng nói thật, chính những design đó đã giúp em nâng cao tay nghề rất nhiều. Cảm ơn vì luôn kiên nhẫn khi em hỏi lại spec.",
+    "quote": "\"Thiếu 1 pixel thôi mà sao trông khác quá!\" — D cute",
+    "color": "#a8e6cf",
+    "order": 4
+  },
+  {
+    "name": "Hoàng Văn E",
+    "nickname": "E",
+    "role": "Backend Developer",
+    "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=E",
+    "message": "Anh E — vua API! Cảm ơn anh vì đã xây dựng những API chuẩn chỉnh để em connect. Những buổi pair programming cùng anh là lúc em học được nhiều nhất. Chúc anh luôn vững vàng!",
+    "quote": "\"500 Internal Server Error — nhưng local em chạy được mà!\" — E",
+    "color": "#ffd3b6",
+    "order": 5
+  },
+  {
+    "name": "Nguyễn Thị F",
+    "nickname": "F",
+    "role": "QA Engineer",
+    "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=F",
+    "message": "Chị F — người mà dev nào cũng \"sợ\" nhưng cũng phải cảm ơn! Cảm ơn chị vì đã tìm ra những bug mà em nghĩ không ai có thể tìm được. Nhờ chị mà code của team luôn chất lượng.",
+    "quote": "\"Em test lại đi, chị thấy nó sai rồi.\" — F",
+    "color": "#c3aed6",
+    "order": 6
+  },
+  {
+    "name": "Đỗ Văn G",
+    "nickname": "G",
+    "role": "DevOps Engineer",
+    "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=G",
+    "message": "Anh G — người giữ cho server luôn sống! Cảm ơn anh đã setup CI/CD, docker, và tất cả những thứ \"behind the scenes\". Không có anh, chắc deploy bằng FTP mãi 😄.",
+    "quote": "\"Works on my machine là câu nói anh ghét nhất.\" — G",
+    "color": "#ffc6ff",
+    "order": 7
+  },
+  {
+    "name": "Vũ Thị H",
+    "nickname": "H",
+    "role": "Product Manager",
+    "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=H",
+    "message": "Chị H — cầu nối giữa business và tech. Cảm ơn chị đã luôn bảo vệ team khỏi những requirement vô lý, và luôn giải thích rõ ràng user story. Chúc chị luôn thành công!",
+    "quote": "\"Sprint này nhẹ thôi, có mấy task...\" — H (mỗi sprint)",
+    "color": "#b5e2fa",
+    "order": 8
+  },
+  {
+    "name": "Bùi Minh I",
+    "nickname": "I",
+    "role": "Mobile Developer",
+    "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=I",
+    "message": "Cảm ơn I vì đã kề vai sát cánh cùng anh trong những dự án cross-platform khó nhằn. Sự chăm chỉ và cầu tiến của em luôn truyền động lực rất lớn cho mọi người.",
+    "quote": "\"Hot reload là tính năng tuyệt vời nhất hệ mặt trời!\" — I",
+    "color": "#fbf8cc",
+    "order": 9
+  },
+  {
+    "name": "Ngô Hoàng J",
+    "nickname": "J",
+    "role": "Data Analyst",
+    "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=J",
+    "message": "Cảm ơn J vì những phân tích dữ liệu vô cùng chuẩn xác giúp định hướng sản phẩm đúng đắn. Nhờ những dashboard trực quan của bạn mà team luôn hiểu rõ insight của người dùng.",
+    "quote": "\"Số liệu không biết nói dối, chỉ có người đọc hiểu sai thôi.\" — J",
+    "color": "#f1c0e8",
+    "order": 10
+  }
+]
