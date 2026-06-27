@@ -52,3 +52,8 @@ export const createFeedback = async (feedback: {
   const { data } = await api.post('/feedbacks', feedback);
   return data;
 };
+
+export const deleteFeedback = async (id: string): Promise<{ message: string }> => {
+  const { data } = await api.delete(`/feedbacks/${id}`);
+  return data;
+};

@@ -1,6 +1,7 @@
 import { useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import type { Member } from '../types';
+import { toDirectAvatarUrl } from '../utils/avatarUrl';
 import './MemberCard.css';
 
 interface MemberCardProps {
@@ -69,7 +70,7 @@ export default function MemberCard({ member, index, onClick }: MemberCardProps) 
         <div className="card-image-area">
           <div className="card-avatar-wrapper">
             {member.avatar ? (
-              <img src={member.avatar} alt={member.name} className="card-avatar-img" />
+              <img src={toDirectAvatarUrl(member.avatar)} alt={member.name} className="card-avatar-img" />
             ) : (
               <div className="card-avatar-initials">
                 {getInitials(member.name)}

@@ -5,6 +5,7 @@ import { useMember } from '../hooks/useMembers';
 import { useFeedback } from '../hooks/useFeedback';
 import FeedbackForm from '../components/FeedbackForm';
 import FeedbackList from '../components/FeedbackList';
+import { toDirectAvatarUrl } from '../utils/avatarUrl';
 import './MemberDetailPage.css';
 
 function getInitials(name: string) {
@@ -148,7 +149,7 @@ export default function MemberDetailPage() {
         {/* Avatar with orbit icons */}
         <div className="detail-avatar-container">
           {member.avatar ? (
-            <img src={member.avatar} alt={member.name} className="detail-avatar-img" />
+            <img src={toDirectAvatarUrl(member.avatar)} alt={member.name} className="detail-avatar-img" />
           ) : (
             <div className="detail-avatar-initials">
               {getInitials(member.name)}

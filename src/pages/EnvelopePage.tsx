@@ -14,17 +14,50 @@ function generatePetals(count: number) {
     'rgba(251, 113, 133, 0.3)',
     'rgba(219, 39, 119, 0.25)',
     'rgba(168, 85, 247, 0.2)',
+    'rgba(244, 114, 182, 0.3)',
   ];
 
   return Array.from({ length: count }, (_, i) => ({
     id: i,
     left: `${Math.random() * 100}%`,
-    size: `${8 + Math.random() * 12}px`,
+    size: `${8 + Math.random() * 14}px`,
     color: petalColors[i % petalColors.length],
-    duration: `${7 + Math.random() * 8}s`,
-    delay: `${Math.random() * 10}s`,
-    drift: `${(Math.random() - 0.5) * 180}px`,
-    rotation: `${180 + Math.random() * 360}deg`,
+    duration: `${6 + Math.random() * 9}s`,
+    delay: `${Math.random() * 12}s`,
+    drift: `${(Math.random() - 0.5) * 200}px`,
+    rotation: `${180 + Math.random() * 540}deg`,
+  }));
+}
+
+// Generate floating light orbs
+function generateOrbs(count: number) {
+  const orbColors = [
+    'rgba(236, 72, 153, 0.08)',
+    'rgba(168, 85, 247, 0.06)',
+    'rgba(244, 63, 94, 0.07)',
+    'rgba(251, 113, 133, 0.05)',
+  ];
+
+  return Array.from({ length: count }, (_, i) => ({
+    id: i,
+    left: `${10 + Math.random() * 80}%`,
+    top: `${10 + Math.random() * 80}%`,
+    size: `${80 + Math.random() * 160}px`,
+    color: orbColors[i % orbColors.length],
+    duration: `${10 + Math.random() * 10}s`,
+    delay: `${Math.random() * 5}s`,
+  }));
+}
+
+// Generate aurora trails
+function generateAuroraTrails(count: number) {
+  return Array.from({ length: count }, (_, i) => ({
+    id: i,
+    top: `${10 + Math.random() * 80}%`,
+    angle: `${-15 + Math.random() * 30}deg`,
+    duration: `${6 + Math.random() * 8}s`,
+    delay: `${Math.random() * 5}s`,
+    opacity: 0.15 + Math.random() * 0.25,
   }));
 }
 
@@ -64,16 +97,18 @@ export default function EnvelopePage({ onComplete }: EnvelopePageProps) {
   const [isOpening, setIsOpening] = useState(false);
   const totalClicks = 6;
   const progress = Math.min(clicks / totalClicks, 1);
-  const petals = useMemo(() => generatePetals(30), []);
+  const petals = useMemo(() => generatePetals(35), []);
+  const orbs = useMemo(() => generateOrbs(5), []);
+  const auroraTrails = useMemo(() => generateAuroraTrails(4), []);
 
   const introText = 'Có một bức thư dành cho bạn...';
-  const { displayedText: introDisplayed, isComplete: introComplete } = useTypewriter(introText, 60, 800);
+  const { displayedText: introDisplayed, isComplete: introComplete } = useTypewriter(introText, 55, 800);
 
   const spawnParticles = useCallback((e: React.MouseEvent) => {
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    const newParticles = Array.from({ length: 12 }, (_, i) => ({
+    const newParticles = Array.from({ length: 16 }, (_, i) => ({
       id: Date.now() + i,
       x,
       y,
@@ -81,7 +116,7 @@ export default function EnvelopePage({ onComplete }: EnvelopePageProps) {
     setParticles((prev) => [...prev, ...newParticles]);
     setTimeout(() => {
       setParticles((prev) => prev.filter((p) => !newParticles.find((np) => np.id === p.id)));
-    }, 1200);
+    }, 1500);
   }, []);
 
   const handleClick = (e: React.MouseEvent) => {
@@ -92,7 +127,7 @@ export default function EnvelopePage({ onComplete }: EnvelopePageProps) {
 
     if (next >= totalClicks) {
       setIsOpening(true);
-      setTimeout(onComplete, 1500);
+      setTimeout(onComplete, 1800);
     }
   };
 
@@ -104,7 +139,43 @@ export default function EnvelopePage({ onComplete }: EnvelopePageProps) {
       <div className="animated-mesh-bg" />
       <div className="envelope-bg-glow" />
 
-      {/* 🌸 Petal Rain */}
+      {/* Aurora light trails */}
+      <div className="aurora-trails">
+        {auroraTrails.map((t) => (
+          <div
+            key={t.id}
+            className="aurora-trail"
+            style={{
+              top: t.top,
+              '--aurora-angle': t.angle,
+              '--aurora-duration': t.duration,
+              '--aurora-delay': t.delay,
+              opacity: t.opacity,
+            } as React.CSSProperties}
+          />
+        ))}
+      </div>
+
+      {/* Floating light orbs */}
+      <div className="light-orbs">
+        {orbs.map((orb) => (
+          <div
+            key={orb.id}
+            className="light-orb"
+            style={{
+              left: orb.left,
+              top: orb.top,
+              width: orb.size,
+              height: orb.size,
+              background: orb.color,
+              '--orb-duration': orb.duration,
+              '--orb-delay': orb.delay,
+            } as React.CSSProperties}
+          />
+        ))}
+      </div>
+
+      {/* 🌸 Petal Rain — more petals */}
       <div className="petal-container">
         {petals.map((p) => (
           <div
@@ -123,17 +194,17 @@ export default function EnvelopePage({ onComplete }: EnvelopePageProps) {
         ))}
       </div>
 
-      {/* Background ambient sparkles */}
+      {/* Background ambient sparkles — more */}
       <div className="ambient-particles">
-        {Array.from({ length: 40 }, (_, i) => (
+        {Array.from({ length: 55 }, (_, i) => (
           <div
             key={i}
             className="ambient-dot"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 5}s`,
-              animationDuration: `${3 + Math.random() * 4}s`,
+              animationDelay: `${Math.random() * 6}s`,
+              animationDuration: `${2 + Math.random() * 5}s`,
             }}
           />
         ))}
@@ -144,10 +215,10 @@ export default function EnvelopePage({ onComplete }: EnvelopePageProps) {
         {clicks === 0 && (
           <motion.div
             className="envelope-intro"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, y: -30 }}
-            transition={{ duration: 0.6 }}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -40, scale: 0.95, filter: 'blur(6px)' }}
+            transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             <p className="envelope-intro-text">
               {introDisplayed}
@@ -156,9 +227,9 @@ export default function EnvelopePage({ onComplete }: EnvelopePageProps) {
             {introComplete && (
               <motion.p
                 className="envelope-hint"
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3, duration: 0.5 }}
+                transition={{ delay: 0.4, duration: 0.7 }}
               >
                 ✨ Nhấn vào bức thư để mở ✨
               </motion.p>
@@ -171,15 +242,15 @@ export default function EnvelopePage({ onComplete }: EnvelopePageProps) {
       {clicks > 0 && clicks < totalClicks && (
         <motion.div
           className="progress-dots"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
         >
           {Array.from({ length: totalClicks }, (_, i) => (
             <motion.div
               key={i}
               className={`progress-dot ${i < clicks ? 'active' : ''}`}
-              animate={i < clicks ? { scale: [1, 1.4, 1] } : {}}
-              transition={{ duration: 0.3 }}
+              animate={i < clicks ? { scale: [1, 1.5, 1] } : {}}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
             />
           ))}
         </motion.div>
@@ -189,15 +260,16 @@ export default function EnvelopePage({ onComplete }: EnvelopePageProps) {
       <motion.div
         className={`envelope ${isOpening ? 'opening' : ''}`}
         onClick={handleClick}
-        whileHover={!isOpening ? { scale: 1.03, y: -8 } : {}}
-        whileTap={!isOpening ? { scale: 0.97 } : {}}
+        whileHover={!isOpening ? { scale: 1.04, y: -10, rotateY: 2 } : {}}
+        whileTap={!isOpening ? { scale: 0.96 } : {}}
         animate={isOpening ? {
-          scale: 1.15,
+          scale: 1.2,
           opacity: 0,
-          y: -80,
-          rotateX: 10,
+          y: -100,
+          rotateX: 15,
+          filter: 'blur(8px) brightness(1.5)',
         } : {}}
-        transition={{ duration: isOpening ? 1.5 : 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+        transition={{ duration: isOpening ? 1.8 : 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
       >
         {/* Envelope glow aura */}
         <div className="envelope-aura" />
@@ -210,8 +282,8 @@ export default function EnvelopePage({ onComplete }: EnvelopePageProps) {
           {/* Letter peeking out */}
           <motion.div
             className="letter-peek"
-            animate={{ y: -(progress * 70) }}
-            transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+            animate={{ y: -(progress * 80) }}
+            transition={{ type: 'spring', stiffness: 180, damping: 18 }}
           >
             <div className="letter-line" />
             <div className="letter-line short" />
@@ -223,9 +295,9 @@ export default function EnvelopePage({ onComplete }: EnvelopePageProps) {
           <motion.div
             className="envelope-seal"
             animate={{
-              scale: 1 - progress * 0.3,
-              opacity: 1 - progress * 0.8,
-              rotate: progress * 45,
+              scale: 1 - progress * 0.4,
+              opacity: 1 - progress * 0.9,
+              rotate: progress * 60,
             }}
           >
             <span>❤️</span>
@@ -247,12 +319,13 @@ export default function EnvelopePage({ onComplete }: EnvelopePageProps) {
             className="click-particle"
             initial={{ x: p.x, y: p.y, scale: 0, opacity: 1 }}
             animate={{
-              x: p.x + (Math.random() - 0.5) * 200,
-              y: p.y + (Math.random() - 0.5) * 200,
-              scale: Math.random() * 2 + 0.5,
+              x: p.x + (Math.random() - 0.5) * 250,
+              y: p.y + (Math.random() - 0.5) * 250,
+              scale: Math.random() * 2.5 + 0.5,
               opacity: 0,
+              rotate: Math.random() * 360,
             }}
-            transition={{ duration: 1, ease: 'easeOut' }}
+            transition={{ duration: 1.2, ease: 'easeOut' }}
           />
         ))}
       </motion.div>
@@ -263,9 +336,10 @@ export default function EnvelopePage({ onComplete }: EnvelopePageProps) {
           <motion.p
             className="click-count"
             key={clicks}
-            initial={{ opacity: 0, scale: 0.8, y: 5 }}
+            initial={{ opacity: 0, scale: 0.7, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: -5 }}
+            exit={{ opacity: 0, scale: 0.7, y: -10 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
           >
             {totalClicks - clicks} lần nữa...
           </motion.p>

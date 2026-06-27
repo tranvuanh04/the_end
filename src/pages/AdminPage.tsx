@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import type { Member } from '../types';
+import type { Member, Feedback } from '../types';
 import MemberCard from '../components/MemberCard';
 import {
   getMembers,
   createMember,
   updateMember,
-  deleteMember
+  deleteMember,
+  getFeedbacks,
+  deleteFeedback
 } from '../services/api';
 import './AdminPage.css';
+import { toDirectAvatarUrl } from '../utils/avatarUrl';
 
 // Preset colors from the design system
 const PRESET_COLORS = [
@@ -27,11 +30,38 @@ interface ToastState {
   type: 'success' | 'error';
 }
 
+// Helper to format relative time
+function timeAgo(dateStr: string): string {
+  const now = new Date();
+  const date = new Date(dateStr);
+  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+  if (seconds < 60) return 'Vừa xong';
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes} phút trước`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} giờ trước`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days} ngày trước`;
+  const months = Math.floor(days / 30);
+  return `${months} tháng trước`;
+}
+
 export default function AdminPage() {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  // Active Tab
+  const [activeTab, setActiveTab] = useState<'members' | 'feedbacks'>('members');
+
+  // Feedbacks State
+  const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
+  const [feedbacksLoading, setFeedbacksLoading] = useState<boolean>(false);
+  const [feedbacksError, setFeedbacksError] = useState<string | null>(null);
+  const [feedbackSearchQuery, setFeedbackSearchQuery] = useState<string>('');
+  const [feedbackToDelete, setFeedbackToDelete] = useState<Feedback | null>(null);
+  const [isDeleteFeedbackModalOpen, setIsDeleteFeedbackModalOpen] = useState(false);
 
   // Toast notifications
   const [toast, setToast] = useState<ToastState>({
@@ -71,8 +101,24 @@ export default function AdminPage() {
     }
   };
 
+  // Fetch feedbacks
+  const fetchFeedbacks = async () => {
+    try {
+      setFeedbacksLoading(true);
+      const data = await getFeedbacks();
+      setFeedbacks(data);
+      setFeedbacksError(null);
+    } catch (err) {
+      console.error(err);
+      setFeedbacksError('Không thể tải danh sách lời nhắn.');
+    } finally {
+      setFeedbacksLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchMembers();
+    fetchFeedbacks();
   }, []);
 
   // Show Toast helper
@@ -188,6 +234,35 @@ export default function AdminPage() {
     );
   });
 
+  // Filter feedbacks based on search
+  const filteredFeedbacks = feedbacks.filter((fb) => {
+    const term = feedbackSearchQuery.toLowerCase();
+    return (
+      fb.memberName.toLowerCase().includes(term) ||
+      fb.content.toLowerCase().includes(term)
+    );
+  });
+
+  // Handle Delete Feedback
+  const handleOpenDeleteFeedbackModal = (fb: Feedback) => {
+    setFeedbackToDelete(fb);
+    setIsDeleteFeedbackModalOpen(true);
+  };
+
+  const handleDeleteFeedbackConfirm = async () => {
+    if (!feedbackToDelete) return;
+    try {
+      await deleteFeedback(feedbackToDelete._id);
+      showToast(`Đã xóa lời nhắn của ${feedbackToDelete.memberName}`);
+      setIsDeleteFeedbackModalOpen(false);
+      setFeedbackToDelete(null);
+      fetchFeedbacks();
+    } catch (err) {
+      console.error(err);
+      showToast('Có lỗi xảy ra khi xóa lời nhắn.', 'error');
+    }
+  };
+
   // Create temporary mock member object for the Live Preview
   const previewMember: Member = {
     _id: selectedMember?._id || 'preview_id',
@@ -217,151 +292,292 @@ export default function AdminPage() {
             <Link to="/members" className="btn-secondary">
               ← Xem trang chính
             </Link>
-            <button className="btn-primary" onClick={handleOpenAddModal}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-              Thêm thành viên
-            </button>
+            {activeTab === 'members' && (
+              <button className="btn-primary" onClick={handleOpenAddModal}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Thêm thành viên
+              </button>
+            )}
           </div>
         </header>
 
-        {/* Controls Bar */}
-        <div className="admin-controls">
-          <div className="admin-search-wrapper">
-            <svg
-              className="admin-search-icon"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        {/* Tab Navigation */}
+        <div className="admin-tabs">
+          <button
+            className={`admin-tab ${activeTab === 'members' ? 'active' : ''}`}
+            onClick={() => setActiveTab('members')}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
             </svg>
-            <input
-              type="text"
-              placeholder="Tìm theo tên, biệt danh, chức vụ..."
-              className="admin-search-input"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            Tổng số: <strong>{filteredMembers.length}</strong> / {members.length}
-          </div>
+            Thành viên
+            <span className="admin-tab-badge">{members.length}</span>
+          </button>
+          <button
+            className={`admin-tab ${activeTab === 'feedbacks' ? 'active' : ''}`}
+            onClick={() => setActiveTab('feedbacks')}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            Lời nhắn
+            {feedbacks.length > 0 && (
+              <span className="admin-tab-badge admin-tab-badge-highlight">{feedbacks.length}</span>
+            )}
+          </button>
         </div>
 
-        {/* Data Table */}
-        <div className="admin-table-container glass-panel">
-          {loading ? (
-            <div className="admin-empty-state">
-              <div className="spinner" style={{ margin: '0 auto 15px', borderLeftColor: 'var(--accent-gold)' }} />
-              <p>Đang tải dữ liệu...</p>
+        {/* ===== MEMBERS TAB ===== */}
+        {activeTab === 'members' && (
+          <>
+            {/* Controls Bar */}
+            <div className="admin-controls">
+              <div className="admin-search-wrapper">
+                <svg
+                  className="admin-search-icon"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Tìm theo tên, biệt danh, chức vụ..."
+                  className="admin-search-input"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                Tổng số: <strong>{filteredMembers.length}</strong> / {members.length}
+              </div>
             </div>
-          ) : error ? (
-            <div className="admin-empty-state">
-              <p style={{ color: '#ef5350' }}>{error}</p>
-              <button className="btn-secondary" style={{ marginTop: '15px' }} onClick={fetchMembers}>
-                Thử lại
-              </button>
-            </div>
-          ) : filteredMembers.length === 0 ? (
-            <div className="admin-empty-state">
-              <div className="admin-empty-icon">📂</div>
-              <p>Không tìm thấy thành viên nào khớp với tìm kiếm.</p>
-            </div>
-          ) : (
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th style={{ width: '60px' }}>STT</th>
-                  <th>Thành viên</th>
-                  <th>Chức vụ</th>
-                  <th>Màu sắc</th>
-                  <th>Lời nhắn</th>
-                  <th style={{ width: '120px', textAlign: 'center' }}>Thao tác</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredMembers.map((member) => (
-                  <tr key={member._id} className="admin-row">
-                    <td>
-                      <span className="admin-order-badge">{member.order}</span>
-                    </td>
-                    <td>
-                      <div className="admin-member-meta">
-                        {member.avatar ? (
-                          <img
-                            src={member.avatar}
-                            alt={member.name}
-                            className="admin-member-avatar"
-                          />
-                        ) : (
-                          <div className="admin-member-avatar-placeholder">
-                            {member.name.charAt(0)}
+
+            {/* Data Table */}
+            <div className="admin-table-container glass-panel">
+              {loading ? (
+                <div className="admin-empty-state">
+                  <div className="spinner" style={{ margin: '0 auto 15px', borderLeftColor: 'var(--accent-gold)' }} />
+                  <p>Đang tải dữ liệu...</p>
+                </div>
+              ) : error ? (
+                <div className="admin-empty-state">
+                  <p style={{ color: '#ef5350' }}>{error}</p>
+                  <button className="btn-secondary" style={{ marginTop: '15px' }} onClick={fetchMembers}>
+                    Thử lại
+                  </button>
+                </div>
+              ) : filteredMembers.length === 0 ? (
+                <div className="admin-empty-state">
+                  <div className="admin-empty-icon">📂</div>
+                  <p>Không tìm thấy thành viên nào khớp với tìm kiếm.</p>
+                </div>
+              ) : (
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th style={{ width: '60px' }}>STT</th>
+                      <th>Thành viên</th>
+                      <th>Chức vụ</th>
+                      <th>Màu sắc</th>
+                      <th>Lời nhắn</th>
+                      <th style={{ width: '120px', textAlign: 'center' }}>Thao tác</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredMembers.map((member) => (
+                      <tr key={member._id} className="admin-row">
+                        <td>
+                          <span className="admin-order-badge">{member.order}</span>
+                        </td>
+                        <td>
+                          <div className="admin-member-meta">
+                            {member.avatar ? (
+                              <img
+                                src={toDirectAvatarUrl(member.avatar)}
+                                alt={member.name}
+                                className="admin-member-avatar"
+                              />
+                            ) : (
+                              <div className="admin-member-avatar-placeholder">
+                                {member.name.charAt(0)}
+                              </div>
+                            )}
+                            <div>
+                              <div className="admin-member-name">{member.name}</div>
+                              {member.nickname && (
+                                <div className="admin-member-nickname">({member.nickname})</div>
+                              )}
+                            </div>
                           </div>
-                        )}
-                        <div>
-                          <div className="admin-member-name">{member.name}</div>
-                          {member.nickname && (
-                            <div className="admin-member-nickname">({member.nickname})</div>
-                          )}
+                        </td>
+                        <td>
+                          <span className="admin-member-role">{member.role}</span>
+                        </td>
+                        <td>
+                          <div className="admin-member-color-indicator">
+                            <span
+                              className="admin-color-dot"
+                              style={{ backgroundColor: member.color || '#d4a574' }}
+                            />
+                            {member.color || '#d4a574'}
+                          </div>
+                        </td>
+                        <td>
+                          <div className="admin-member-message" title={member.message}>
+                            {member.message}
+                          </div>
+                        </td>
+                        <td>
+                          <div className="admin-actions">
+                            <button
+                              className="btn-icon btn-icon-edit"
+                              title="Sửa thông tin"
+                              onClick={() => handleOpenEditModal(member)}
+                            >
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M12 20h9"></path>
+                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                              </svg>
+                            </button>
+                            <button
+                              className="btn-icon btn-icon-delete"
+                              title="Xóa thành viên"
+                              onClick={() => handleOpenDeleteModal(member)}
+                            >
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </>
+        )}
+
+        {/* ===== FEEDBACKS TAB ===== */}
+        {activeTab === 'feedbacks' && (
+          <>
+            {/* Controls Bar */}
+            <div className="admin-controls">
+              <div className="admin-search-wrapper">
+                <svg
+                  className="admin-search-icon"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Tìm theo tên người gửi hoặc nội dung..."
+                  className="admin-search-input"
+                  value={feedbackSearchQuery}
+                  onChange={(e) => setFeedbackSearchQuery(e.target.value)}
+                />
+              </div>
+              <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                Tổng số: <strong>{filteredFeedbacks.length}</strong> lời nhắn
+              </div>
+            </div>
+
+            {/* Feedbacks Content */}
+            <div className="admin-feedbacks-container">
+              {feedbacksLoading ? (
+                <div className="admin-empty-state glass-panel">
+                  <div className="spinner" style={{ margin: '0 auto 15px', borderLeftColor: 'var(--accent-gold)' }} />
+                  <p>Đang tải lời nhắn...</p>
+                </div>
+              ) : feedbacksError ? (
+                <div className="admin-empty-state glass-panel">
+                  <p style={{ color: '#ef5350' }}>{feedbacksError}</p>
+                  <button className="btn-secondary" style={{ marginTop: '15px' }} onClick={fetchFeedbacks}>
+                    Thử lại
+                  </button>
+                </div>
+              ) : filteredFeedbacks.length === 0 ? (
+                <div className="admin-empty-state glass-panel">
+                  <div className="admin-empty-icon">💬</div>
+                  <p>Chưa có lời nhắn nào từ người dùng.</p>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '8px' }}>
+                    Khi ai đó để lại lời nhắn trên trang thành viên, nó sẽ hiển thị ở đây.
+                  </p>
+                </div>
+              ) : (
+                <div className="admin-feedbacks-grid">
+                  {filteredFeedbacks.map((fb, index) => (
+                    <motion.div
+                      key={fb._id}
+                      className="admin-feedback-card glass-panel"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                    >
+                      <div className="admin-feedback-card-header">
+                        <div className="admin-feedback-sender">
+                          {fb.emoji && <span className="admin-feedback-emoji">{fb.emoji}</span>}
+                          <div>
+                            <div className="admin-feedback-sender-name">{fb.memberName}</div>
+                            <div className="admin-feedback-time">{timeAgo(fb.createdAt)}</div>
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td>
-                      <span className="admin-member-role">{member.role}</span>
-                    </td>
-                    <td>
-                      <div className="admin-member-color-indicator">
-                        <span
-                          className="admin-color-dot"
-                          style={{ backgroundColor: member.color || '#d4a574' }}
-                        />
-                        {member.color || '#d4a574'}
-                      </div>
-                    </td>
-                    <td>
-                      <div className="admin-member-message" title={member.message}>
-                        {member.message}
-                      </div>
-                    </td>
-                    <td>
-                      <div className="admin-actions">
-                        <button
-                          className="btn-icon btn-icon-edit"
-                          title="Sửa thông tin"
-                          onClick={() => handleOpenEditModal(member)}
-                        >
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M12 20h9"></path>
-                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                          </svg>
-                        </button>
                         <button
                           className="btn-icon btn-icon-delete"
-                          title="Xóa thành viên"
-                          onClick={() => handleOpenDeleteModal(member)}
+                          title="Xóa lời nhắn"
+                          onClick={() => handleOpenDeleteFeedbackModal(fb)}
                         >
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <polyline points="3 6 5 6 21 6"></polyline>
                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                            <line x1="10" y1="11" x2="10" y2="17"></line>
-                            <line x1="14" y1="11" x2="14" y2="17"></line>
                           </svg>
                         </button>
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
+                      <div className="admin-feedback-content">
+                        <p>{fb.content}</p>
+                      </div>
+                      <div className="admin-feedback-card-footer">
+                        <span className="admin-feedback-date">
+                          {new Date(fb.createdAt).toLocaleDateString('vi-VN', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </span>
+                        <span className="admin-feedback-for-label">gửi cho thành viên</span>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </>
+        )}
       </div>
 
       {/* FORM MODAL (ADD & EDIT) */}
@@ -550,6 +766,45 @@ export default function AdminPage() {
                   Hủy
                 </button>
                 <button className="btn-primary btn-danger" onClick={handleDeleteConfirm}>
+                  Đồng ý Xóa
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* CONFIRM DELETE FEEDBACK MODAL */}
+      <AnimatePresence>
+        {isDeleteFeedbackModalOpen && feedbackToDelete && (
+          <div className="admin-modal-overlay">
+            <motion.div
+              className="admin-modal admin-confirm-modal glass-panel"
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+            >
+              <div className="admin-modal-header" style={{ justifyContent: 'center' }}>
+                <h2 className="admin-modal-title">Xóa lời nhắn?</h2>
+              </div>
+              <div className="admin-modal-content" style={{ display: 'block', padding: '20px 30px' }}>
+                <div className="confirm-icon">🗑️</div>
+                <p style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '10px' }}>
+                  Xóa lời nhắn của "{feedbackToDelete.memberName}"?
+                </p>
+                <div className="admin-feedback-preview-box">
+                  <p>{feedbackToDelete.content}</p>
+                </div>
+                <p className="confirm-text" style={{ marginTop: '15px' }}>
+                  Hành động này không thể hoàn tác.
+                </p>
+              </div>
+              <div className="admin-modal-footer" style={{ justifyContent: 'center', gap: '15px' }}>
+                <button className="btn-secondary" onClick={() => setIsDeleteFeedbackModalOpen(false)}>
+                  Hủy
+                </button>
+                <button className="btn-primary btn-danger" onClick={handleDeleteFeedbackConfirm}>
                   Đồng ý Xóa
                 </button>
               </div>
