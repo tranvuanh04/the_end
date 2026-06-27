@@ -226,7 +226,7 @@ export default function TheEndPage({ onComplete }: TheEndPageProps) {
               animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               transition={{ duration: 1.5, ease: 'easeOut' }}
             >
-              Mỗi khoảnh khắc bên nhau đều là kỷ niệm đẹp 💫
+              Cảm ơn mọi người rất nhiều 💫
             </motion.p>
           )}
 

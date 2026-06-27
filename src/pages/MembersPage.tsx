@@ -85,7 +85,7 @@ export default function MembersPage() {
       >
         <h1 className="members-title">Những Người Đồng Hành</h1>
         <p className="members-subtitle">
-          Cảm ơn các bạn đã đồng hành cùng mình trong suốt hành trình vừa qua. 
+          Cảm ơn các bạn đã đồng hành cùng mình trong suốt hành trình vừa qua.
           Nhấn vào card để đọc lời nhắn dành riêng cho bạn 💛
         </p>
         <div className="members-title-divider" />
